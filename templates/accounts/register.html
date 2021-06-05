@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Register Account{% endblock %}
+{% block content %}
+
+    <section id="register" class="bg-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4>
+                                <i class="fas fa-user-plus"></i> Register</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="action_result alert alert-danger"></div>
+
+                            <form action="{% url 'accounts:register' %}" method="POST">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="first_name">First Name</label>
+                                    <input type="text" name="first_name" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="last_name">Last Name</label>
+                                    <input type="text" name="last_name" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" name="username" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" name="email" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password2">Password</label>
+                                    <input type="password" name="password" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Confirm Password</label>
+                                    <input type="password" name="password2" class="form-control" required>
+                                </div>
+                                <input type="submit" value="Register" class="btn btn-secondary btn-block">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block extrastyle1 %}
+    <script type="text/javascript">
+        $("form").on("submit", function (event) {
+            {#alert()#}
+            var formData = new FormData($(this)[0]);
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: formData,
+
+                    success: function (response) {
+                        if (response["code"] == 100) {
+                            window.location = response["url"] + '?message=logged in successfully';
+                        } else {
+                            $(".action_result").show();
+
+                            $('.action_result').empty().text(response["error"]);
+
+                        }
+                    }
+                });
+        });
+    </script>
+{% endblock %}

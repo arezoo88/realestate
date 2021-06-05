@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Account Login{% endblock %}
+{% block content %}
+
+    <section id="login" class="bg-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4>
+                                <i class="fas fa-sign-in-alt"></i> Login</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="action_result alert alert-danger"></div>
+
+                            <form action="{% url 'accounts:login' %}" method="POST">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" name="username" class="form-control" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password2">Password</label>
+                                    <input type="password" name="password" class="form-control" required>
+                                </div>
+
+                                <input type="submit" value="Login" class="btn btn-secondary btn-block">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block extrastyle1 %}
+    <script type="text/javascript">
+        $("form").on("submit", function (event) {
+            var formData = new FormData($(this)[0]);
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: formData,
+
+                    success: function (response) {
+                        if (response["code"] == 100) {
+                            window.location = response["url"] + '?message=You are now logged in.';
+                        } else {
+                            $(".action_result").show();
+
+                            $('.action_result').empty().text(response["error"]);
+
+                        }
+                    }
+                });
+        });
+    </script>
+{% endblock %}
